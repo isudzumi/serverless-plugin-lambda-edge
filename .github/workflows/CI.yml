@@ -1,0 +1,30 @@
+name: CI
+on: push
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@master
+    - name: yarn install
+      run: yarn --frozen-lockfile
+    - name: test
+      run: yarn test
+  publish:
+    name: publish
+    runs-on: ubuntu-18.04
+    needs: test
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: yarn install
+      run: yarn --frozen-lockfile
+      if: contains(github.ref, 'tags/')
+    - name: publish
+      run: yarn publish
+      if: contains(github.ref, 'tags/')
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
