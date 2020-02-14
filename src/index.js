@@ -27,7 +27,7 @@ class UpdateLambdaFunctionAssociationPlugin {
     Promise.all([
       this.getAsyncCloudFrontConfig(),
       this.getAsyncUpdatedLambdaAssociationConfig()
-    ]).then(([cloudFrontConfig, lambdaAssociationConfig]) => {
+    ]).then(async ([cloudFrontConfig, lambdaAssociationConfig]) => {
       this.serverless.cli.log('LambdaEdge: Get specified CloudFront distribution config')
 
       cloudFrontConfig['Id'] = this.custom.cloudFrontId
@@ -37,7 +37,7 @@ class UpdateLambdaFunctionAssociationPlugin {
       // "updateDistribution" param doesn't need ETag
       delete cloudFrontConfig['ETag']
 
-      this.updateCloudFrontConfig(cloudFrontConfig)
+      await this.updateCloudFrontConfig(cloudFrontConfig)
 
       this.serverless.cli.log('LambdaEdge: Successfully update lambda function association on CloudFront')
     })
