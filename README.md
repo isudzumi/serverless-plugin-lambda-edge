@@ -1,6 +1,7 @@
 # serverless-plugin-lambda-edge
 
 [![npm version](https://badge.fury.io/js/%40isudzumi%2Fserverless-plugin-lambda-edge.svg)](https://badge.fury.io/js/%40isudzumi%2Fserverless-plugin-lambda-edge)
+![publish](https://github.com/isudzumi/serverless-plugin-lambda-edge/workflows/publish/badge.svg)
 
 serverless plugin for Lambda@Edge with using aws-sdk instead of CloudFormation.
 
