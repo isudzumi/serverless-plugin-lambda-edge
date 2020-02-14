@@ -1,5 +1,7 @@
-name: CI
-on: push
+name: publish
+on:
+  push:
+    tags: '*'
 jobs:
   test:
     name: test
@@ -22,9 +24,7 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - name: yarn install
       run: yarn --frozen-lockfile
-      if: contains(github.ref, 'tags/')
     - name: publish
       run: yarn publish
-      if: contains(github.ref, 'tags/')
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
