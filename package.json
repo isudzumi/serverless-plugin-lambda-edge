@@ -1,6 +1,6 @@
 {
   "name": "@isudzumi/serverless-plugin-lambda-edge",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "serverless plugin for Lambda@Edge with aws-sdk",
   "main": "src/index.js",
   "repository": "ssh://git@github.com/isudzumi/serverless-plugin-lambda-edge",
