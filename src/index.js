@@ -10,22 +10,19 @@ class UpdateLambdaFunctionAssociationPlugin {
     }
     this.custom = this.serverless.service.custom
     this.functions = this.serverless.service.functions
-    this.cloudFront = null
 
     if (!this.custom.cloudFrontId) {
-      throw Error("'custom.cloudFrontId' is requied. You must specify it.")
+      throw new this.serverless.classes.Error("LambdaEdge: 'custom.cloudFrontId' is requied. You must specify it.")
     }
     if (!Object.values(this.functions).every((func) => func.hasOwnProperty('eventType'))) {
-      throw Error("'functions.eventType' is requied. You must specify it.")
+      throw new this.serverless.classes.Error("LambdaEdge: 'functions.eventType' is requied. You must specify it.")
     }
   }
 
   updateLambdaFunctionAssociations() {
-    this.initCloudFrontAPI()
-
     Promise.all([
-      this.getAsyncCloudFrontConfig(),
-      this.getAsyncUpdatedLambdaAssociationConfig()
+      this.getCloudFrontConfig(),
+      this.getUpdatedLambdaAssociationConfig()
     ]).then(async ([cloudFrontConfig, lambdaAssociationConfig]) => {
       this.serverless.cli.log('LambdaEdge: Get specified CloudFront distribution config')
 
@@ -33,7 +30,7 @@ class UpdateLambdaFunctionAssociationPlugin {
       cloudFrontConfig['IfMatch'] = cloudFrontConfig['ETag']
       cloudFrontConfig['DistributionConfig']['DefaultCacheBehavior']['LambdaFunctionAssociations'] = lambdaAssociationConfig
 
-      // "updateDistribution" param doesn't need ETag
+      // "CloudFront.updateDistribution" method's param doesn't need ETag
       delete cloudFrontConfig['ETag']
 
       await this.updateCloudFrontConfig(cloudFrontConfig)
@@ -42,24 +39,19 @@ class UpdateLambdaFunctionAssociationPlugin {
     })
   }
 
-  initCloudFrontAPI() {
-    this.cloudFront = new AWS.CloudFront({
-      apiVersion: '2019-03-26',
-      accessKeyId: AWS_ACCESS_KEY_ID,
-      secretAccessKey: AWS_SECRET_ACCESS_KEY,
-      region: AWS_DEFAULT_REGION
-    })
+  async getCloudFrontConfig() {
+    return await this.provider.request('CloudFront', 'getDistributionConfig', { Id: this.custom.cloudFrontId })
   }
 
-  getAsyncCloudFrontConfig() {
-    if (!this.cloudFront) {
-      throw Error("CloudFront API hasn't still initialized")
+  async updateCloudFrontConfig(cloudFrontConfig) {
+    if (!cloudFrontConfig) {
+      throw new this.serverless.classes.Error('LambdaEdge: Missing CloudFront config')
     }
-    return this.cloudFront.getDistributionConfig({ Id: this.custom.cloudFrontId }).promise()
+    return await this.provider.request('CloudFront', 'updateDistribution', cloudFrontConfig)
   }
 
-  getAsyncUpdatedLambdaAssociationConfig() {
-    return this.getUpdatedLambdaAssociationConfigItems()
+  async getUpdatedLambdaAssociationConfig() {
+    return await this.getUpdatedLambdaAssociationConfigItems()
       .then((items) => ({
         Quantity: items.length,
         Items: items
@@ -83,13 +75,13 @@ class UpdateLambdaFunctionAssociationPlugin {
       return current
     }, initialData)
     if (latestFunction['Version'] === initialData['Version']) {
-      throw Error("Couldn't get latest lambda function")
+      throw new this.serverless.classes.Error("LambdaEdge: Couldn't get latest lambda function")
     }
     return latestFunction
   }
 
   async getUpdatedLambdaAssociationConfigItems() {
-    return Promise.all(Object.values(this.functions).map(async ({ name, eventType }) => {
+    return await Promise.all(Object.values(this.functions).map(async ({ name, eventType }) => {
       const latestFunction = await this.getLatestFunction(name)
       return {
         EventType: eventType,
@@ -97,13 +89,6 @@ class UpdateLambdaFunctionAssociationPlugin {
         IncludeBody: false
       }
     }))
-  }
-
-  updateCloudFrontConfig(cloudFrontConfig) {
-    if (!this.cloudFront) {
-      throw Error("CloudFront API hasn't still initialized")
-    }
-    this.cloudFront.updateDistribution(cloudFrontConfig).promise()
   }
 }
 
