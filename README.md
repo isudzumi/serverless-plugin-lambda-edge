@@ -7,7 +7,7 @@ serverless plugin for Lambda@Edge with using aws-sdk instead of CloudFormation.
 
 This makes it possible for users to associate Lambda functions to your currently working Cloudfront.
 
-## Install
+## Usage
 
 1. Install the plugin
 ```sh
