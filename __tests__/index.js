@@ -1,4 +1,4 @@
-const UpdateLambdaFunctionAssociationPlugin = require('../index')
+const UpdateLambdaFunctionAssociationPlugin = require('../src/index.js')
 
 class StubService {
   constructor() {
