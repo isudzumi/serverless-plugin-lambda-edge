@@ -1,6 +1,5 @@
 const AWS = require('aws-sdk')
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION } = process.env
-const { getAsyncLatestFunction } = require('./get-async-latest-function')
 
 class UpdateLambdaFunctionAssociationPlugin {
   constructor(serverless, options) {
@@ -60,16 +59,38 @@ class UpdateLambdaFunctionAssociationPlugin {
   }
 
   getAsyncUpdatedLambdaAssociationConfig() {
-    return this.getAsyncUpdatedLambdaAssociationConfigItems()
+    return this.getUpdatedLambdaAssociationConfigItems()
       .then((items) => ({
         Quantity: items.length,
         Items: items
       }))
   }
 
-  getAsyncUpdatedLambdaAssociationConfigItems() {
+  async getLatestFunction(functionName) {
+    const functions = await this.provider.request('Lambda', 'listVersionsByFunction', {
+      FunctionName: functionName
+    })
+    const initialData = {Version: '0'}
+    const latestFunction = functions['Versions'].reduce((prev, current) => {
+      const prevVersion = parseInt(prev['Version'])
+      const currentVersion = parseInt(current['Version'])
+      if (Number.isNaN(currentVersion)) {
+        return prev
+      }
+      if (prevVersion > currentVersion) {
+        return prev
+      }
+      return current
+    }, initialData)
+    if (latestFunction['Version'] === initialData['Version']) {
+      throw Error("Couldn't get latest lambda function")
+    }
+    return latestFunction
+  }
+
+  async getUpdatedLambdaAssociationConfigItems() {
     return Promise.all(Object.values(this.functions).map(async ({ name, eventType }) => {
-      const latestFunction = await getAsyncLatestFunction(name)
+      const latestFunction = await this.getLatestFunction(name)
       return {
         EventType: eventType,
         LambdaFunctionARN: latestFunction['FunctionArn'],
