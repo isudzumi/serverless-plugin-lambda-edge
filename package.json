@@ -3,14 +3,18 @@
   "version": "1.0.1",
   "description": "serverless plugin for Lambda@Edge with aws-sdk",
   "main": "src/index.js",
-  "repository": "ssh://git@github.com/isudzumi/serverless-plugin-lambda-edge",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isudzumi/serverless-plugin-lambda-edge.git"
+  },
+  "homepage": "https://github.com/isudzumi/serverless-plugin-lambda-edge",
   "keywords": [
     "serverless",
     "serverless plugin",
     "Lambda@Edge",
     "CloudFront"
   ],
-  "author": "isudzumi <isudzumi@gmail.com>",
+  "author": "isudzumi <mail@isudzumi.com>",
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.538.0"
