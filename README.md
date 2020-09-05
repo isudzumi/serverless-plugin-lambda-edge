@@ -11,7 +11,13 @@ This makes it possible for users to associate Lambda functions to your currently
 
 1. Install the plugin
 ```sh
-npm install --save-dev @isudzumi/serverless-plugin-lambda-edge
+npm install --save-dev serverless-plugin-lambda-edge
+```
+
+or
+
+```sh
+serverless plugin install -n serverless-plugin-lambda-edge
 ```
 
 2. Put the plugin name in your `serverless.yml`

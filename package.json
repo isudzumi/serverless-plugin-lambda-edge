@@ -1,5 +1,5 @@
 {
-  "name": "@isudzumi/serverless-plugin-lambda-edge",
+  "name": "serverless-plugin-lambda-edge",
   "version": "1.0.2",
   "description": "serverless plugin for Lambda@Edge with aws-sdk",
   "main": "src/index.js",
