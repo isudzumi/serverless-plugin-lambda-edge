@@ -24,7 +24,7 @@ serverless plugin install -n serverless-plugin-lambda-edge
 
 ```yml
 plugins
-  - '@isudzumi/serverless-plugin-lambda-edge'
+  - serverless-plugin-lambda-edge
 ```
 
 3. Configure you Lambda@Edge properties
