@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-lambda-edge",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "serverless plugin for Lambda@Edge with aws-sdk",
   "main": "src/index.js",
   "repository": {
