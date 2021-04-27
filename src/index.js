@@ -12,10 +12,10 @@ class UpdateLambdaFunctionAssociationPlugin {
     this.functions = this.serverless.service.functions
 
     if (!this.custom.cloudFrontId) {
-      throw new this.serverless.classes.Error("LambdaEdge: 'custom.cloudFrontId' is requied. You must specify it.")
+      throw new this.serverless.classes.Error("LambdaEdge: 'custom.cloudFrontId' is required. You must specify it.")
     }
     if (!Object.values(this.functions).every((func) => func.hasOwnProperty('eventType'))) {
-      throw new this.serverless.classes.Error("LambdaEdge: 'functions.eventType' is requied. You must specify it.")
+      throw new this.serverless.classes.Error("LambdaEdge: 'functions.eventType' is required. You must specify it.")
     }
   }
 
