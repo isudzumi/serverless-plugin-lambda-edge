@@ -16,9 +16,6 @@
   ],
   "author": "isudzumi <mail@isudzumi.com>",
   "license": "MIT",
-  "dependencies": {
-    "aws-sdk": "^2.538.0"
-  },
   "devDependencies": {
     "jest": "^24.9.0"
   },
