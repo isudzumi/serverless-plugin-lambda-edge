@@ -55,12 +55,14 @@ class UpdateLambdaFunctionAssociationPlugin {
       }))
   }
 
-  async getLatestFunction(functionName) {
+  async getLatestFunction(functionName, previousFunction = { Version: "0" }, previousMarker = "") {
     const functions = await this.provider.request('Lambda', 'listVersionsByFunction', {
-      FunctionName: functionName
+      FunctionName: functionName,
+      ...(previousMarker.length ? { Marker: previousMarker } : {}),
     })
-    const initialData = {Version: '0'}
-    const latestFunction = functions['Versions'].reduce((prev, current) => {
+
+    const nextMarker = functions['NextMarker'];
+    const latestFunction = functions['Versions'].reduce((prev,current) => {
       const prevVersion = parseInt(prev['Version'])
       const currentVersion = parseInt(current['Version'])
       if (Number.isNaN(currentVersion)) {
@@ -70,10 +72,17 @@ class UpdateLambdaFunctionAssociationPlugin {
         return prev
       }
       return current
-    }, initialData)
-    if (latestFunction['Version'] === initialData['Version']) {
+    }, previousFunction)
+
+    const parseVersion = parseInt(latestFunction['Version']);
+    if (!parseVersion || parseVersion === 0) {
       throw new this.serverless.classes.Error("LambdaEdge: Couldn't get latest lambda function")
     }
+
+    if (nextMarker && nextMarker.length) {
+      return this.getLatestFunction(functionName,latestFunction,nextMarker)
+    }
+
     return latestFunction
   }
 
